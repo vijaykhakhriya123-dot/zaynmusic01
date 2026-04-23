@@ -4,6 +4,7 @@ import os
 
 app = Flask(__name__)
 
+# Render ke environment variable se cookie uthayenge
 ROBLOX_COOKIE = os.environ.get("ROBLOX_COOKIE")
 
 @app.route('/')
@@ -18,22 +19,28 @@ def upload_music():
             return jsonify({"success": False, "error": "No URL provided"}), 400
 
         yt_url = data.get('url')
+        print(f"Downloading started for: {yt_url}")
 
-        # 🚀 FAST DOWNLOAD SETTINGS (No FFmpeg needed)
+        # 🚀 FAST DOWNLOAD SETTINGS (YouTube Bot Bypass Added)
         ydl_opts = {
-            'format': 'm4a/bestaudio/best', # Direct m4a format, bina kisi conversion ke
+            'format': 'm4a/bestaudio/best', 
             'outtmpl': 'music.m4a',
             'noplaylist': True,
-            'quiet': True
+            'quiet': True,
+            # 👇 YEH LINE YOUTUBE KO BEWAKOOF BANAYEGI (Spoof as Android) 👇
+            'extractor_args': {'youtube': {'client': ['android']}}
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([yt_url])
 
-        # Yahan par aapka Roblox Upload Logic aayega
-        generated_asset_id = "1234567890" # Test ID
+        print("Download successful!")
 
-        # Server ka space clear karna
+        # Step 2: Roblox par Upload karna (Roblox API Logic)
+        # Abhi ke liye API bypass check karne ke liye dummy ID bhej rahe hain
+        generated_asset_id = "1234567890"
+
+        # Server ka space clear karne ke liye gaana delete kar do
         if os.path.exists("music.m4a"):
             os.remove("music.m4a")
 
