@@ -1,11 +1,9 @@
 from flask import Flask, request, jsonify
 import yt_dlp
-import requests
 import os
 
 app = Flask(__name__)
 
-# Render ke environment variable se cookie uthayenge (100% Safe)
 ROBLOX_COOKIE = os.environ.get("ROBLOX_COOKIE")
 
 @app.route('/')
@@ -16,34 +14,28 @@ def home():
 def upload_music():
     try:
         data = request.json
-        yt_url = data.get('url')
-
-        if not yt_url:
+        if not data or 'url' not in data:
             return jsonify({"success": False, "error": "No URL provided"}), 400
 
-        # Step 1: YouTube se Audio Download karna
+        yt_url = data.get('url')
+
+        # 🚀 FAST DOWNLOAD SETTINGS (No FFmpeg needed)
         ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': 'music.mp3', # Downloaded file ka naam
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-                'preferredquality': '128',
-            }],
+            'format': 'm4a/bestaudio/best', # Direct m4a format, bina kisi conversion ke
+            'outtmpl': 'music.m4a',
+            'noplaylist': True,
+            'quiet': True
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([yt_url])
 
-        # Step 2: Roblox par Upload karna
-        # (Yahan Roblox ki official Upload API ka request aayega jo MP3 file aur cookie use karega)
-        
-        # Abhi ke liye hum ek dummy ID bhej rahe hain testing ke liye
-        generated_asset_id = "1234567890" 
+        # Yahan par aapka Roblox Upload Logic aayega
+        generated_asset_id = "1234567890" # Test ID
 
-        # Server ka space bachane ke liye gaana download hone ke baad delete kar do
-        if os.path.exists("music.mp3"):
-            os.remove("music.mp3")
+        # Server ka space clear karna
+        if os.path.exists("music.m4a"):
+            os.remove("music.m4a")
 
         return jsonify({
             "success": True, 
@@ -52,6 +44,7 @@ def upload_music():
         })
 
     except Exception as e:
+        print("ERROR AAYA HAI:", str(e))
         return jsonify({"success": False, "error": str(e)}), 500
 
 if __name__ == '__main__':
