@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import yt_dlp
+from pytubefix import YouTube
 import os
 
 app = Flask(__name__)
@@ -21,26 +21,22 @@ def upload_music():
         yt_url = data.get('url')
         print(f"Downloading started for: {yt_url}")
 
-        # 🚀 FAST DOWNLOAD SETTINGS (YouTube Bot Bypass Added)
-        ydl_opts = {
-            'format': 'm4a/bestaudio/best', 
-            'outtmpl': 'music.m4a',
-            'noplaylist': True,
-            'quiet': True,
-            # 👇 YEH LINE YOUTUBE KO BEWAKOOF BANAYEGI (Spoof as Android) 👇
-            'extractor_args': {'youtube': {'client': ['android']}}
-        }
-
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([yt_url])
-
+        # 🚀 THE ULTIMATE BYPASS: pytubefix with PO Token
+        # Yeh YouTube ke anti-bot system ko hara dega
+        yt = YouTube(yt_url, use_po_token=True)
+        
+        # Sirf audio stream extract karna (Fastest method)
+        audio_stream = yt.streams.get_audio_only()
+        
+        # Audio ko server par download karna
+        audio_stream.download(filename="music.m4a")
+        
         print("Download successful!")
 
-        # Step 2: Roblox par Upload karna (Roblox API Logic)
-        # Abhi ke liye API bypass check karne ke liye dummy ID bhej rahe hain
-        generated_asset_id = "1234567890"
+        # Yahan Roblox API par upload karne ka code aayega
+        generated_asset_id = "1234567890" # Dummy ID for testing
 
-        # Server ka space clear karne ke liye gaana delete kar do
+        # Space bachane ke liye download ke baad delete
         if os.path.exists("music.m4a"):
             os.remove("music.m4a")
 
